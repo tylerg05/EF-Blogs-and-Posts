@@ -58,58 +58,92 @@ namespace BlogsConsole
                         // Show all blogs
                         var blogs = db.Blogs;
                         Console.WriteLine("Here are all the blogs:");
-                        var counter = 1;
                         foreach (var item in blogs)
                         {
-                            Console.WriteLine(counter + ") " + item.Name);
-                            counter++;
+                            Console.WriteLine(item.BlogId + ") " + item.Name);
                         }
 
                         // Ask user to select blog
-                        Console.Write("Enter a Blog number: ");
-                        var userChoice = Console.ReadLine();
-
-                        // Ask user to enter post details
-                        Console.WriteLine("Enter a Post");
-
-                        Console.WriteLine("Enter a title");
-                        var title = Console.ReadLine();
-
-                        Console.WriteLine("Enter some content");
-                        var content = Console.ReadLine();
-
-                        // save the post
-                        var newPost = new Post
+                        Console.Write("Enter a Blog ID: ");
+                        var userChoice = Int32.Parse(Console.ReadLine());
+                        var validBlogIDFlag = false;
+                        foreach (var item in blogs)
                         {
-                            Title = title,
-                            Content = content,
-                            BlogId = blog.BlogId
-                        };
+                            if (item.BlogId == userChoice)
+                            {
+                                validBlogIDFlag = true;
+                            }
+                        }
+                        
+                        if (validBlogIDFlag)
+                        {
+                            var blog = blogs.FirstOrDefault(b => b.BlogId == userChoice);
 
-                        db.Posts.Add(newPost);
-                        db.SaveChanges();
-                        //logger.Info("new post saved");
+
+                            // Ask user to enter post details
+                            Console.WriteLine("Enter a Post");
+
+                            Console.WriteLine("Enter a title");
+                            var title = Console.ReadLine();
+                            if (title.Equals(""))
+                            {
+                                Console.WriteLine("Post title cannot be null");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Enter some content");
+                                var content = Console.ReadLine();
+
+                                // save the post
+                                var newPost = new Post
+                                {
+                                    Title = title,
+                                    Content = content,
+                                    BlogId = blog.BlogId
+                                };
+
+                                db.Posts.Add(newPost);
+                                db.SaveChanges();
+                                //logger.Info("new post saved");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid Blog ID");
+                        }
                     }
                     else if (userInput == "4")
                     {
                         // Show all blogs
                         var blogs = db.Blogs;
                         Console.WriteLine("Here are all the blogs:");
+                        Console.WriteLine("0) Posts from all blogs");
                         foreach (var item in blogs)
                         {
-                            Console.WriteLine(item.Name);
+                            Console.WriteLine(item.BlogId + ") " + item.Name);
                         }
 
                         // Ask user to select blog
-                        Console.Write("Enter a Blog name: ");
-                        var userChoice = Console.ReadLine();
-                        var blog = blogs.FirstOrDefault(b => b.Name == userChoice);
-
-                        // display the posts
-                        Console.WriteLine("Here are the posts:");
-                        foreach (var item in db.Posts)
+                        Console.Write("Enter a Blog ID: ");
+                        var userChoice = Int32.Parse(Console.ReadLine());
+                        if (userChoice == 0)
                         {
-                            Console.WriteLine($"title: {item.Title}; content: {item.Content}");
+                            foreach (var item in db.Posts)
+                            {
+                                Console.WriteLine("Blog: " + item.Blog);
+                                Console.WriteLine($"title: {item.Title}; content: {item.Content}");
+                            }
+                        }
+                        else
+                        {
+                            var blog = blogs.FirstOrDefault(b => b.BlogId == userChoice);
+
+                            // display the posts
+                            Console.WriteLine("Here are the posts:");
+                            foreach (var item in blog.Posts)
+                            {
+                                Console.WriteLine($"title: {item.Title}; content: {item.Content}");
+                            }
                         }
                     }
                     else
